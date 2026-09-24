@@ -1,0 +1,109 @@
+========================================
+ASSETGUARD - PHONE CONNECTION ISSUE
+========================================
+
+PROBLEM: Phone app can't reach backend during sign-in
+
+DIAGNOSIS: 
+✅ Backend IS running on 10.128.192.221:5000
+✅ IP configuration IS correct in api_config.dart
+✅ Firewall rules exist for Node.js
+✅ Server listening on all interfaces (0.0.0.0:5000)
+
+LIKELY CAUSE: Phone cannot reach laptop over network
+
+========================================
+QUICK FIX (Try These In Order)
+========================================
+
+1. TEST FROM PHONE BROWSER FIRST
+   -----------------------------------
+   On phone, open Chrome/browser:
+   Go to: http://10.128.192.221:5000
+   
+   ✅ If you see JSON error → Connection works!
+      Problem is in app config or permissions.
+      See Step 5 below.
+   
+   ❌ If timeout/can't connect → Network issue.
+      Continue to Step 2.
+
+2. VERIFY SAME NETWORK
+   -----------------------------------
+   Check phone Wi-Fi settings
+   Check laptop Wi-Fi: netsh wlan show interfaces
+   MUST be on same network!
+   
+   If different → Connect phone to same Wi-Fi
+   Retry Step 1
+
+3. FIX FIREWALL (Run as Administrator)
+   -----------------------------------
+   PowerShell:
+   cd c:\flutter-project\assetguard
+   .\fix-firewall.ps1
+   
+   This creates explicit rule for Port 5000
+   Then retry Step 1
+
+4. CHECK AP ISOLATION
+   -----------------------------------
+   Some routers isolate devices.
+   
+   Test: Can phone ping laptop?
+   Use "PingTools" app on phone
+   Ping: 10.128.192.221
+   
+   ❌ If ping fails → Router has AP Isolation
+   Fix: Router settings or use USB tethering (see guide)
+
+5. IF BROWSER WORKS BUT APP DOESN'T
+   -----------------------------------
+   Edit: android/app/src/main/AndroidManifest.xml
+   Add: android:usesCleartextTraffic="true"
+   
+   Then rebuild:
+   flutter build apk
+   
+   Reinstall on phone
+
+========================================
+DETAILED GUIDE
+========================================
+
+See: FIX_PHONE_CONNECTION.md (complete troubleshooting)
+
+========================================
+NEED HELP?
+========================================
+
+Run this diagnostic:
+cd c:\flutter-project\assetguard
+.\diagnose-connection.ps1
+
+Output will show exact issue.
+
+========================================
+ALTERNATIVE: USB TETHERING
+========================================
+
+If Wi-Fi doesn't work:
+1. Enable USB tethering on phone
+2. Connect phone to laptop via USB
+3. Find laptop's USB IP: ipconfig
+4. Update api_config.dart with new IP
+5. Rebuild APK
+
+========================================
+CURRENT STATUS
+========================================
+
+✅ Backend: Running (PID 7896)
+✅ Port: 5000 listening
+✅ IP: 10.128.192.221
+✅ Config: Matches
+❓ Phone: Cannot reach backend
+
+Next: Test from phone browser (Step 1)
+
+========================================

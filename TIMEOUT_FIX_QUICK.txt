@@ -1,0 +1,106 @@
+╔═══════════════════════════════════════════════════════════╗
+║         ASSETGUARD TIMEOUT FIX - QUICK GUIDE              ║
+╚═══════════════════════════════════════════════════════════╝
+
+PROBLEM FOUND:
+  Your laptop is on "OPPO K10 5G 14" (phone hotspot)
+  Network is PUBLIC → Windows blocks port 5000
+  Phone can't reach backend even on same hotspot
+
+═══════════════════════════════════════════════════════════
+
+THE FIX (2 MINUTES):
+
+1. RIGHT-CLICK POWERSHELL → RUN AS ADMINISTRATOR
+   
+2. RUN THESE COMMANDS:
+   
+   cd c:\flutter-project\assetguard
+   
+   Set-NetConnectionProfile -Name "OPPO K10 5G 14" -NetworkCategory Private
+
+3. TEST FROM PHONE BROWSER:
+   http://10.151.32.221:5000
+   Should see: JSON error (good!)
+
+4. TEST APP:
+   Open AssetGuard → Register
+   Should work! ✅
+
+═══════════════════════════════════════════════════════════
+
+IF THAT DOESN'T WORK, ADD FIREWALL RULE:
+
+(Run PowerShell as Administrator)
+
+New-NetFirewallRule `
+  -DisplayName "AssetGuard 5000" `
+  -Direction Inbound `
+  -LocalPort 5000 `
+  -Protocol TCP `
+  -Action Allow `
+  -Profile Public
+
+═══════════════════════════════════════════════════════════
+
+VERIFY IT WORKED:
+
+PowerShell:
+  Get-NetConnectionProfile
+  (Should show: NetworkCategory = Private)
+
+Phone Browser:
+  http://10.151.32.221:5000
+  (Should show: JSON error)
+
+App:
+  Register owner@test.com
+  (Should succeed!)
+
+═══════════════════════════════════════════════════════════
+
+CURRENT STATUS:
+  ✅ Backend: Running on 10.151.32.221:5000
+  ✅ APK: Built with correct IP
+  ✅ Network: Same hotspot
+  ❌ Firewall: Blocking port 5000 (PUBLIC network)
+
+SOLUTION: Change to PRIVATE or add firewall rule
+
+═══════════════════════════════════════════════════════════
+
+ALTERNATIVE (BETTER FOR DEVELOPMENT):
+
+Use regular Wi-Fi instead of hotspot:
+  1. Connect laptop to Wi-Fi router
+  2. Connect phone to same Wi-Fi
+  3. Check new IP: ipconfig
+  4. Update api_config.dart
+  5. Rebuild: flutter build apk
+  6. Reinstall: adb install -r build\...\app-release.apk
+
+═══════════════════════════════════════════════════════════
+
+QUESTIONS?
+  - Check: FIX_TIMEOUT_NOW.md (detailed guide)
+  - Check: SOLUTION_HOTSPOT_ISSUE.md (all options)
+
+═══════════════════════════════════════════════════════════
+
+QUICK TEST AFTER FIX:
+
+Phone Browser → http://10.151.32.221:5000
+  ✅ JSON error = Network works
+  ❌ Timeout = Still blocked
+
+App → Register → owner@test.com
+  ✅ Success = Fixed!
+  ❌ Timeout = Check firewall
+
+═══════════════════════════════════════════════════════════
+
+RUN THIS NOW (as Administrator):
+
+Set-NetConnectionProfile -Name "OPPO K10 5G 14" -NetworkCategory Private
+
+═══════════════════════════════════════════════════════════

@@ -1,0 +1,122 @@
+========================================
+ASSETGUARD - INSTALL NEW APK & TEST
+========================================
+
+YOUR CURRENT IP: 10.151.32.221
+APK BUILT WITH THIS IP: ✅ YES
+
+========================================
+STEP 1: INSTALL APK ON BOTH PHONES
+========================================
+
+PowerShell command:
+adb install -r build\app\outputs\flutter-apk\app-release.apk
+
+(Run this twice if both phones connected,
+or reconnect phone after first install)
+
+========================================
+STEP 2: START BACKEND (if not running)
+========================================
+
+.\start-backend.ps1
+
+Should show:
+✅ MongoDB Connected
+✅ Server running on port 5000
+
+========================================
+STEP 3: TEST FROM PHONE BROWSER
+========================================
+
+On phone, open browser, go to:
+http://10.151.32.221:5000
+
+Expected: JSON error (this is GOOD)
+If timeout: Check network/backend
+
+========================================
+STEP 4: TEST REGISTRATION IN APP
+========================================
+
+Phone A:
+1. Open AssetGuard
+2. Tap "Register"
+3. Fill:
+   Name: Test Owner
+   Email: owner@test.com
+   Password: Test123!
+4. Tap "Register"
+
+Expected: ✅ Success → Home screen
+
+Phone B:
+Same steps with:
+   Name: Test Helper
+   Email: helper@test.com
+   Password: Test123!
+
+========================================
+STEP 5: CHECK BACKEND LOGS
+========================================
+
+Backend should show:
+POST /api/auth/register 201 Created
+
+If you see this: SUCCESS! ✅
+
+========================================
+TROUBLESHOOTING
+========================================
+
+Problem: "Cannot reach server"
+Fix: Check IP hasn't changed:
+     ipconfig | Select-String "IPv4"
+     If different, rebuild APK
+
+Problem: Backend not responding
+Fix: .\start-backend.ps1
+
+Problem: App crashes
+Fix: Clear app data in phone settings
+
+========================================
+NEXT: FULL TESTING
+========================================
+
+Once registration works:
+1. Create asset (AG-001)
+2. Mark as LOST
+3. Enable Community Sensing
+4. Test detection
+5. Verify notification
+
+See: START_TESTING_NOW.md
+
+========================================
+KEY FILES
+========================================
+
+APK: build\app\outputs\flutter-apk\app-release.apk
+Backend: backend\server.js (should be running)
+Docs: START_TESTING_NOW.md
+
+========================================
+QUICK COMMANDS
+========================================
+
+Check IP:
+ipconfig | Select-String "IPv4"
+
+Check backend:
+Get-Process -Name node
+
+Test backend:
+curl http://10.151.32.221:5000
+
+Install APK:
+adb install -r build\app\outputs\flutter-apk\app-release.apk
+
+========================================
+
+YOU'RE READY TO TEST! 🚀

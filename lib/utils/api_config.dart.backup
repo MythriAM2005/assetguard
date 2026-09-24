@@ -1,0 +1,20 @@
+/// API base URL configuration.
+///
+/// For physical device testing on the same LAN as your dev laptop:
+///   - Find your laptop's local IP:  run `ipconfig` on Windows, look for
+///     the IPv4 address of your Wi-Fi adapter (e.g. 192.168.1.42).
+///   - Replace the IP below with your laptop's IP.
+///   - Make sure the phone and laptop are on the same Wi-Fi network.
+///   - Do NOT use localhost or 127.0.0.1 — those refer to the phone itself.
+///
+/// For emulator testing:
+///   - Android emulator: use 10.0.2.2 (routes to the host machine's localhost)
+///
+/// Change this value before building/running on the physical device.
+class ApiConfig {
+  // ⚠️  CHANGE THIS to your laptop's LAN IP when testing on a physical device.
+  // Example: 'http://192.168.1.42:5000'
+  static const String baseUrl = 'http://10.151.32.221:5000';
+
+  static const Duration timeout = Duration(seconds: 15);
+}

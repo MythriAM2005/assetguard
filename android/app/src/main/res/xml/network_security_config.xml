@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Production network security configuration -->
+    <!-- 
+         Cleartext (HTTP) traffic is permitted to allow connection to backend servers
+         that may not have SSL certificates. For maximum security, consider deploying
+         backend with HTTPS and removing cleartextTrafficPermitted.
+    -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
