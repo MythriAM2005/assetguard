@@ -16,11 +16,11 @@ class Environment {
   /// 
   /// Set at build time with --dart-define=API_URL=url
   /// 
-  /// Default is the development server IP used during testing.
-  /// **IMPORTANT:** Change this for production builds.
+  /// Default is the production backend server.
+  /// Can be overridden at build time for testing.
   static const String apiBaseUrl = String.fromEnvironment(
     'API_URL',
-    defaultValue: 'http://10.151.32.221:5000',
+    defaultValue: 'https://assetguard-qynw.onrender.com',
   );
 
   /// Python ML Server API base URL (for room prediction)
@@ -40,6 +40,6 @@ class Environment {
   /// ML API timeout (longer for cold starts)
   static const Duration mlTimeout = Duration(seconds: 30);
 
-  /// Check if using default (development) configuration
-  static bool get isDefaultConfig => apiBaseUrl == 'http://10.151.32.221:5000';
+  /// Check if using default (production) configuration
+  static bool get isDefaultConfig => apiBaseUrl == 'https://assetguard-qynw.onrender.com';
 }
