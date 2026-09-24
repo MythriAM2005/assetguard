@@ -4,6 +4,13 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Load keystore properties from key.properties file
+val keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = java.util.Properties()
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
+}
+
 android {
     namespace = "io.assetguard.app"
     compileSdk = flutter.compileSdkVersion
@@ -28,12 +35,38 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        // Production release signing configuration
+        // Requires key.properties file with keystore credentials
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            // See android/key.properties.example for production signing setup.
-            signingConfig = signingConfigs.getByName("debug")
+            // PRODUCTION SAFETY: Only use release signing if key.properties exists
+            // If keystore is not configured, the build will fail with a clear error
+            // rather than silently using insecure debug keys for production
+            if (keystorePropertiesFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            } else {
+                // For development testing of release builds without keystore:
+                // Use: flutter build apk --debug
+                // Do NOT distribute APKs built without proper signing!
+                throw GradleException(
+                    "❌ PRODUCTION SIGNING NOT CONFIGURED!\n\n" +
+                    "Release builds require a production keystore.\n" +
+                    "Please configure android/key.properties before building release APK.\n\n" +
+                    "See: android/key.properties.example for setup instructions.\n\n" +
+                    "For development/testing: Use 'flutter build apk --debug' instead."
+                )
+            }
         }
     }
 }
